@@ -22,12 +22,13 @@
   @apply flex items-stretch border-b border-gray-100;
 }
 
-.card-header-title, .card-header-icon {
+.card-header-title,
+.card-header-icon {
   @apply flex items-center py-3 px-4;
 }
 
 .card-header-title {
-  @apply flex-grow font-bold ;
+  @apply flex-grow font-bold;
 }
 
 .card-header-icon {

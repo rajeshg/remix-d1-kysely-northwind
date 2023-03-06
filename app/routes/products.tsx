@@ -1,33 +1,17 @@
 import { Suspense } from "react";
 import { type LoaderArgs } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData, useRevalidator } from "@remix-run/react";
-
+import { getD1Client } from "~/lib/db";
 import { maybeDefer } from "~/utils";
 
 export function loader({ context }: LoaderArgs) {
-  const productsPromise = context.DB.prepare(
-    `
-    SELECT Id, ProductName, SupplierId, CategoryId, QuantityPerUnit, UnitPrice, UnitsInStock, UnitsOnOrder, ReorderLevel, Discontinued
-    FROM Product
-    LIMIT ?1
-    OFFSET ?2
-  `
-  )
-    .bind(20, 0)
-    .all<{
-      Id: number;
-      ProductName: string;
-      SupplierId: string;
-      CategoryId: string;
-      QuantityPerUnit: string;
-      UnitPrice: string;
-      UnitsInStock: string;
-      UnitsOnOrder: string;
-      ReorderLevel: string;
-      Discontinued: string;
-    }>()
-    .then((res) => res.results);
-
+  const db = getD1Client(context);
+  const productsPromise = db
+    .selectFrom("product")
+    .selectAll()
+    .limit(5)
+    .offset(0)
+    .execute();
   return maybeDefer(context.session, {
     productsPromise,
   });

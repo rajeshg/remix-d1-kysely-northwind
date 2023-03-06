@@ -1,33 +1,20 @@
 import { type LoaderArgs } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
+import invariant from "tiny-invariant";
 
 import { AddTableField } from "~/components/tools";
+import { getD1Client } from "~/lib/db";
 import { maybeDefer } from "~/utils";
 
 export function loader({ context, params }: LoaderArgs) {
-  const customerPromise = context.DB.prepare(
-    `
-    SELECT Id, CompanyName, ContactName, ContactTitle, Address, City, Region, PostalCode, Country, Phone, Fax
-    FROM Customer
-    WHERE Id = ?1
-  `
-  )
-    .bind(params.id)
-    .first<{
-      Id: string;
-      CompanyName: string;
-      ContactName: string;
-      ContactTitle: string;
-      Address: string;
-      City: string;
-      Region: string;
-      PostalCode: string;
-      Country: string;
-      Phone: string;
-      Fax: string;
-    }>()
-    .then((r) => r || null);
+  invariant(params.id, "Missing customer id");
+  const db = getD1Client(context);
+  const customerPromise = db
+    .selectFrom("customer")
+    .selectAll()
+    .where("Id", "=", params.id)
+    .executeTakeFirstOrThrow();
 
   return maybeDefer(context.session, {
     customerPromise,

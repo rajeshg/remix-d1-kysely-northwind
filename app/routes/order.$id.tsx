@@ -10,7 +10,7 @@ export function loader({ context, params }: LoaderArgs) {
     `
       SELECT Shipper.CompanyName AS ShipViaCompanyName, SUM(OrderDetail.UnitPrice * OrderDetail.Discount * OrderDetail.Quantity) AS TotalProductsDiscount, SUM(OrderDetail.UnitPrice * OrderDetail.Quantity) AS TotalProductsPrice, SUM(OrderDetail.Quantity) AS TotalProductsItems, COUNT(OrderDetail.OrderId) AS TotalProducts, "Order".Id, CustomerId, EmployeeId, OrderDate, RequiredDate, ShippedDate, ShipVia, Freight, ShipName, ShipAddress, ShipCity, ShipRegion, ShipPostalCode, ShipCountry, ProductId
       FROM "Order", OrderDetail, Shipper
-      WHERE OrderDetail.OrderId = "Order".Id AND "Order".Id = ?1 AND "Order".ShipVia = Shipper.Id
+      WHERE OrderDetail.OrderId = "Order".Id AND "Order".Id = ? AND "Order".ShipVia = Shipper.Id
       GROUP BY "Order".Id
     `
   ).bind(params.id);
@@ -19,7 +19,7 @@ export function loader({ context, params }: LoaderArgs) {
     `
       SELECT OrderDetail.OrderId, OrderDetail.Quantity, OrderDetail.UnitPrice AS OrderUnitPrice, OrderDetail.Discount, Product.Id, ProductName, SupplierId, CategoryId, QuantityPerUnit, Product.UnitPrice AS ProductUnitPrice, UnitsInStock, UnitsOnOrder, ReorderLevel, Discontinued
       FROM Product, OrderDetail
-      WHERE OrderDetail.OrderId = ?1 AND OrderDetail.ProductId = Product.Id
+      WHERE OrderDetail.OrderId = ? AND OrderDetail.ProductId = Product.Id
     `
   ).bind(params.id);
 
@@ -65,7 +65,7 @@ export function loader({ context, params }: LoaderArgs) {
         stats: {
           results: products.length + 1,
         },
-        order: (orders ? orders[0] : {}) as typeof orders[0],
+        order: (orders ? orders[0] : {}) as (typeof orders)[0],
         products: products,
       };
     }

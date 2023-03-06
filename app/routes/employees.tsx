@@ -3,38 +3,11 @@ import { type LoaderArgs } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData, useRevalidator } from "@remix-run/react";
 
 import { maybeDefer } from "~/utils";
+import { getD1Client } from "~/lib/db";
 
 export function loader({ context }: LoaderArgs) {
-  const employeesPromise = context.DB.prepare(
-    `
-    SELECT Id, LastName, FirstName, Title, TitleOfCourtesy, BirthDate, HireDate, Address, City, Region, PostalCode, Country, HomePhone, Extension, Photo, Notes, ReportsTo, PhotoPath
-    FROM Employee
-    LIMIT ?1
-    OFFSET ?2
-  `
-  )
-    .bind(20, 0)
-    .all<{
-      Id: number;
-      LastName: string;
-      FirstName: string;
-      Title: string;
-      TitleOfCourtesy: string;
-      BirthDate: string;
-      HireDate: string;
-      Address: string;
-      City: string;
-      Region: string;
-      PostalCode: string;
-      Country: string;
-      HomePhone: string;
-      Extension: string;
-      Photo: string;
-      Notes: string;
-      ReportsTo: string;
-      PhotoPath: string;
-    }>()
-    .then((res) => res.results);
+  const db = getD1Client(context);
+  const employeesPromise = db.selectFrom("employee").selectAll().execute();
 
   return maybeDefer(context.session, {
     employeesPromise,
@@ -94,7 +67,7 @@ export default function Employees() {
                             <div className="image">
                               <img
                                 alt=""
-                                src={`https://avatars.dicebear.com/v2/initials/${employee.FirstName[0]}-${employee.LastName[0]}.svg`}
+                                src={`https://avatars.dicebear.com/v2/initials/${employee.FirstName?.[0]}-${employee.LastName?.[0]}.svg`}
                                 className="rounded-full"
                               />
                             </div>

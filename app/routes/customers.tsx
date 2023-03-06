@@ -3,31 +3,11 @@ import { type LoaderArgs } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData, useRevalidator } from "@remix-run/react";
 
 import { maybeDefer } from "~/utils";
+import { getD1Client } from "~/lib/db";
 
 export function loader({ context }: LoaderArgs) {
-  const customersPromise = context.DB.prepare(
-    `
-    SELECT Id, CompanyName, ContactName, ContactTitle, Address, City, Region, PostalCode, Country, Phone, Fax
-    FROM Customer
-    LIMIT ?1
-    OFFSET ?2
-  `
-  )
-    .bind(20, 0)
-    .all<{
-      Id: string;
-      CompanyName: string;
-      ContactName: string;
-      ContactTitle: string;
-      Address: string;
-      City: string;
-      Region: string;
-      PostalCode: string;
-      Country: string;
-      Phone: string;
-      Fax: string;
-    }>()
-    .then((res) => res.results);
+  const db = getD1Client(context);
+  const customersPromise = db.selectFrom("customer").selectAll().execute();
 
   return maybeDefer(context.session, {
     customersPromise,
@@ -88,9 +68,9 @@ export default function Customers() {
                               <img
                                 alt=""
                                 src={`https://avatars.dicebear.com/v2/initials/${
-                                  customer.ContactName.split(" ")[0]
+                                  customer.ContactName?.split(" ")[0]
                                 }-${
-                                  customer.ContactName.split(" ").slice(-1)[0]
+                                  customer.ContactName?.split(" ").slice(-1)[0]
                                 }.svg`}
                                 className="rounded-full"
                               />

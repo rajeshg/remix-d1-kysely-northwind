@@ -3,29 +3,18 @@ import { type LoaderArgs } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData, useRevalidator } from "@remix-run/react";
 
 import { maybeDefer } from "~/utils";
+import { getD1Client } from "~/lib/db";
 
-export async function loader({ context }: LoaderArgs) {
-  const suppliersPromise = context.DB.prepare(
-    `
-    SELECT Id, CompanyName, ContactName, ContactTitle, Address, City, Region, PostalCode, Country, Phone, Fax, HomePage
-    FROM Supplier
-    LIMIT ?1
-    OFFSET ?2
-  `
-  )
-    .bind(20, 0)
-    .all<{
-      Id: number;
-      ContactName: string;
-      CompanyName: string;
-      ContactTitle: string;
-      City: string;
-      Country: string;
-    }>()
-    .then((res) => res.results);
-
+export function loader({ context }: LoaderArgs) {
+  const db = getD1Client(context);
+  const suppliersPromise = db
+    .selectFrom("supplier")
+    .selectAll()
+    .limit(5)
+    .offset(0)
+    .execute();
   return maybeDefer(context.session, {
-    suppliersPromise: suppliersPromise,
+    suppliersPromise,
   });
 }
 
@@ -83,9 +72,9 @@ export default function Suppliers() {
                               <img
                                 alt=""
                                 src={`https://avatars.dicebear.com/v2/initials/${
-                                  supplier.ContactName.split(" ")[0]
+                                  supplier.ContactName?.split(" ")[0]
                                 }-${
-                                  supplier.ContactName.split(" ").slice(-1)[0]
+                                  supplier.ContactName?.split(" ").slice(-1)[0]
                                 }.svg`}
                                 className="rounded-full"
                               />

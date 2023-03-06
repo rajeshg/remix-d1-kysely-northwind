@@ -12,7 +12,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "~/*": ["../app/*"],
+      // "~/*": ["../app/*"],
       "#build": ["../types/build.d.ts", "../build/index.js"]
     },
 

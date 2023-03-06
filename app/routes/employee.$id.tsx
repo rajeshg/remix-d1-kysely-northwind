@@ -11,7 +11,7 @@ export function loader({ context, params }: LoaderArgs) {
     SELECT Report.Id AS ReportId, Report.FirstName AS ReportFirstName, Report.LastName AS ReportLastName, Employee.Id, Employee.LastName, Employee.FirstName, Employee.Title, Employee.TitleOfCourtesy, Employee.BirthDate, Employee.HireDate, Employee.Address, Employee.City, Employee.Region, Employee.PostalCode, Employee.Country, Employee.HomePhone, Employee.Extension, Employee.Photo, Employee.Notes, Employee.ReportsTo, Employee.PhotoPath
     FROM Employee
     LEFT JOIN Employee AS Report ON Report.Id = Employee.ReportsTo
-    WHERE Employee.Id = ?1
+    WHERE Employee.Id = ?
   `
   )
     .bind(params.id)

@@ -10,8 +10,8 @@ export function loader({ context }: LoaderArgs) {
     SELECT SUM(OrderDetail.UnitPrice * OrderDetail.Discount * OrderDetail.Quantity) AS TotalProductsDiscount, SUM(OrderDetail.UnitPrice * OrderDetail.Quantity) AS TotalProductsPrice, SUM(OrderDetail.Quantity) AS TotalProductsItems, COUNT(OrderDetail.OrderId) AS TotalProducts, "Order".Id, CustomerId, EmployeeId, OrderDate, RequiredDate, ShippedDate, ShipVia, Freight, ShipName, ShipAddress, ShipCity, ShipRegion, ShipPostalCode, ShipCountry, ProductId FROM "Order", OrderDetail
     WHERE OrderDetail.OrderId = "Order".Id
     GROUP BY "Order".Id
-    LIMIT ?1
-    OFFSET ?2
+    LIMIT ?
+    OFFSET ?
   `
   )
     .bind(20, 0)

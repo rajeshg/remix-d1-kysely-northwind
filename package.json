@@ -8,34 +8,39 @@
     "dev": "npm run build:css && concurrently \"npm:dev:*\"",
     "dev:css": "postcss ./css/admin.scss -o ./app/css/admin.css --watch",
     "dev:remix": "remix watch",
-    "dev:cloudflare": "wrangler pages dev public --compatibility-date=2023-01-18 --persist --d1 DB --binding SESSION_SECRET=s --env local --live-reload",
+    "dev:cloudflare": "wrangler pages dev public --compatibility-date=2023-03-01 --persist --d1 DB --binding SESSION_SECRET=s --env local --live-reload",
+    "format": "prettier --write .",
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@remix-run/cloudflare": "^1.11.0",
-    "@remix-run/react": "^1.11.0",
-    "@remix-run/serve": "^1.11.0",
-    "isbot": "^3.6.5",
+    "@remix-run/cloudflare": "^1.14.0",
+    "@remix-run/react": "^1.14.0",
+    "@remix-run/serve": "^1.14.0",
+    "isbot": "^3.6.6",
+    "kysely-d1": "^0.3.0",
+    "prettier": "^2.8.4",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "tiny-invariant": "^1.3.1"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "*",
-    "@remix-run/dev": "^1.11.0",
-    "@remix-run/eslint-config": "^1.11.0",
+    "@remix-run/dev": "^1.14.0",
+    "@remix-run/eslint-config": "^1.14.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.8",
     "autoprefixer": "^10.4.13",
-    "better-sqlite3": "^8.0.1",
+    "better-sqlite3": "^8.1.0",
     "concurrently": "^7.6.0",
-    "eslint": "^8.27.0",
+    "eslint": "^8.35.0",
+    "kysely-codegen": "^0.9.0",
     "postcss": "^8.4.21",
     "postcss-cli": "^10.1.0",
     "postcss-import": "^15.1.0",
     "postcss-nested": "^6.0.0",
-    "tailwindcss": "^3.2.4",
-    "typescript": "^4.8.4",
-    "wrangler": "^2.8.0"
+    "tailwindcss": "^3.2.7",
+    "typescript": "^4.9.5",
+    "wrangler": "^2.12.0"
   },
   "engines": {
     "node": ">=14"

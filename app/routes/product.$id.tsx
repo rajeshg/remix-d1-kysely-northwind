@@ -1,34 +1,22 @@
 import { type LoaderArgs } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
+import invariant from "tiny-invariant";
 
 import { AddTableField } from "~/components/tools";
+import { getD1Client } from "~/lib/db";
 import { maybeDefer } from "~/utils";
 
 export function loader({ context, params }: LoaderArgs) {
-  const productPromise = context.DB.prepare(
-    `
-    SELECT Product.Id, ProductName, SupplierId, CategoryId, QuantityPerUnit, UnitPrice, UnitsInStock, UnitsOnOrder, ReorderLevel, Discontinued, Supplier.CompanyName AS SupplierName
-    FROM Product, Supplier
-    WHERE Product.Id = ?1 AND Supplier.Id=Product.SupplierId
-  `
-  )
-    .bind(params.id)
-    .first<{
-      Id: number;
-      ProductName: string;
-      SupplierId: string;
-      CategoryId: string;
-      QuantityPerUnit: string;
-      UnitPrice: string;
-      UnitsInStock: string;
-      UnitsOnOrder: string;
-      ReorderLevel: string;
-      Discontinued: string;
-      SupplierName: string;
-    }>()
-    .then((r) => r || null);
-
+  invariant(params.id, "id is required");
+  const db = getD1Client(context);
+  const productId = Number(params.id);
+  const productPromise = db
+    .selectFrom("product")
+    .innerJoin("supplier", "supplier.Id", "product.SupplierId")
+    .selectAll()
+    .where("product.Id", "=", productId)
+    .executeTakeFirstOrThrow();
   return maybeDefer(context.session, {
     productPromise,
   });

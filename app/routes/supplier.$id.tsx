@@ -1,35 +1,21 @@
 import { type LoaderArgs } from "@remix-run/cloudflare";
 import { Await, Link, useLoaderData } from "@remix-run/react";
 import { Suspense } from "react";
+import invariant from "tiny-invariant";
 
 import { AddTableField } from "~/components/tools";
+import { getD1Client } from "~/lib/db";
 import { maybeDefer } from "~/utils";
 
 export function loader({ context, params }: LoaderArgs) {
-  const supplierPromise = context.DB.prepare(
-    `
-    SELECT Id, CompanyName, ContactName, ContactTitle, Address, City, Region, PostalCode, Country, Phone, Fax, HomePage
-    FROM Supplier
-    WHERE Id = ?1
-  `
-  )
-    .bind(params.id)
-    .first<{
-      Id: number;
-      ContactName: string;
-      CompanyName: string;
-      ContactTitle: string;
-      City: string;
-      Country: string;
-      Address: string;
-      Region: string;
-      PostalCode: string;
-      Phone: string;
-      Fax?: string;
-      HomePage?: string;
-    }>()
-    .then((r) => r || null);
-
+  invariant(params.id, "id is required");
+  const db = getD1Client(context);
+  const supplierId = Number(params.id);
+  const supplierPromise = db
+    .selectFrom("supplier")
+    .selectAll()
+    .where("Id", "=", supplierId)
+    .executeTakeFirstOrThrow();
   return maybeDefer(context.session, {
     supplierPromise,
   });
