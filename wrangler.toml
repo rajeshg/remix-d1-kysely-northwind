@@ -1,5 +1,5 @@
 name = "remix-d1-northwind"
-compatibility_date = "2023-01-18"
+compatibility_date = "2023-03-01"
 compatibility_flags = ["streams_enable_constructors"]
 
 [[env.local.d1_databases]]
@@ -16,4 +16,3 @@ database_id = "8531f0b2-241b-4f1b-b747-084dde57606a"
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "d1-northwind"
 database_id = "7a1eb8a4-c50c-4270-8b74-8c9f7da4b087"
-
